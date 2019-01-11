@@ -44,7 +44,13 @@ public class HomeFX {
             FXCollections.observableArrayList(
                     "Random",
                     "Cars",
-                    "Nature"
+                    "Nature",
+                    "Art",
+                    "Code",
+                    "Spectrums",
+                    "Abstract",
+                    "Night",
+                    "America"
             );
 
     @FXML

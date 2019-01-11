@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<BorderPane prefWidth="400" prefHeight="400" fx:controller="HomeFX"
+            stylesheets="style.css"
+            xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <Label styleClass="app-title" maxWidth="Infinity" alignment="TOP_CENTER">
+            <text>Nice Backgrounds</text>
+            <graphic>
+                <ImageView fitHeight="35" fitWidth="35">
+                    <image>
+                        <Image url="images-icon.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Label>
+    </top>
+
+    <center>
+            <GridPane hgap="10" vgap="10">
+                <CheckBox fx:id="activeCheckbox" GridPane.rowIndex="1" GridPane.columnIndex="1" text="Active"/>
+
+                <ComboBox promptText="Search term" GridPane.rowIndex="3" GridPane.columnIndex="1" fx:id="searchTermCb"/>
+
+                <ComboBox promptText="Update interval" GridPane.rowIndex="4" GridPane.columnIndex="1" fx:id="updateIntervalCb"/>
+            </GridPane>
+    </center>
+
+    <bottom>
+        <BorderPane>
+            <center>
+                <VBox alignment="CENTER">
+                    <Button text="Next Image" GridPane.rowIndex="4" GridPane.columnIndex="1" fx:id="nextImageButton">
+                        <VBox.margin>
+                            <Insets>
+                                <bottom>70</bottom>
+                            </Insets>
+                        </VBox.margin>
+                    </Button>
+                </VBox>
+
+            </center>
+        </BorderPane>
+    </bottom>
+
+</BorderPane>

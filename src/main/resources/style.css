@@ -1,0 +1,32 @@
+.root {
+    -fx-background-color: #333;
+}
+.label {
+    -fx-font-size: 20;
+    -fx-text-fill: #fff;
+}
+
+.radio-button {
+    -fx-text-fill: #fff;
+}
+
+.app-title {
+    -fx-border-color: #C8C8C8;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-style: solid;
+    -fx-padding: 20;
+}
+
+#nextImageButton {
+    -fx-background-color: #090a0c;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-font-size: 12px;
+    -fx-padding: 10 20 10 20;
+}
+
+#activeCheckbox {
+    -fx-text-fill: #fff;
+    -fx-font-size: 14;
+}
+

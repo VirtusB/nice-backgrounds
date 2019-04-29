@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 
 public class HomeFX {
@@ -28,16 +30,17 @@ public class HomeFX {
     public Button nextImageButton;
     public ComboBox updateIntervalCb;
 
-    private ScheduledExecutorService updateIntervalExecutor = Executors.newSingleThreadScheduledExecutor();
+    public Preferences preferences;
 
+    private ScheduledExecutorService updateIntervalExecutor = Executors.newSingleThreadScheduledExecutor();
 
     private ObservableList<UpdateInterval> updateIntervalOptions =
             FXCollections.observableArrayList(
-                    new UpdateInterval("Stopped", 0),
-                    new UpdateInterval("Every 30 sec.", 30),
-                    new UpdateInterval("Every 2 min.", 120),
-                    new UpdateInterval("Every 30 min.", 1800),
-                    new UpdateInterval("Every 2 hrs.", 7200)
+                    new UpdateInterval("Stopped", 0, 1),
+                    new UpdateInterval("Every 30 sec.", 30, 2),
+                    new UpdateInterval("Every 2 min.", 120, 3),
+                    new UpdateInterval("Every 30 min.", 1800, 4),
+                    new UpdateInterval("Every 2 hrs.", 7200, 5)
             );
 
     private ObservableList<String> searchOptions =
@@ -63,7 +66,30 @@ public class HomeFX {
         addSearchTermComboBoxListener();
         addNextButtonListener();
         addUpdateIntervalListener();
+
+        setupPreferences();
     }
+
+    private void setupPreferences() {
+        this.preferences = Preferences.userNodeForPackage(HomeFX.class);
+
+        boolean activeStatus = this.preferences.getBoolean("isActive", false);
+        this.setActiveStatusManually(activeStatus);
+
+        String searchTerm = this.preferences.get("searchTerm", "Random");
+        this.setSearchTermByValue(searchTerm);
+
+        int updateIntervalId = this.preferences.getInt("updateIntervalId", -1);
+        if (updateIntervalId != -1) {
+            UpdateInterval interval = findUpdateIntervalById(this.updateIntervalOptions, updateIntervalId);
+            this.updateIntervalCb.getSelectionModel().select(interval);
+        }
+    }
+
+    public UpdateInterval findUpdateIntervalById(Collection<UpdateInterval> listInterval, int id) {
+        return listInterval.stream().filter(interval -> id == interval.get_id()).findFirst().orElse(null);
+    }
+
 
     private void addComboBoxOptions() {
         searchTermCb.getItems().addAll(searchOptions);
@@ -72,6 +98,10 @@ public class HomeFX {
 
     private boolean isActive() {
         return this.activeCheckbox.isSelected();
+    }
+
+    private void setActiveStatusManually(boolean active) {
+        this.activeCheckbox.setSelected(active);
     }
 
     private void addUpdateInterval() {
@@ -87,6 +117,8 @@ public class HomeFX {
             if (updateInterval == null || updateInterval.get_intervalSeconds() == 0) {
                 return;
             }
+
+
             int ms = updateInterval.get_intervalSeconds() * 1000;
 
             Runnable task = () -> {
@@ -102,6 +134,10 @@ public class HomeFX {
     private void addUpdateIntervalListener() {
         this.updateIntervalCb.setOnAction(event -> {
             addUpdateInterval();
+            System.out.println(1);
+
+            UpdateInterval selectedUpdateInterval = (UpdateInterval) this.updateIntervalCb.getSelectionModel().getSelectedItem();
+            this.preferences.putInt("updateIntervalId", selectedUpdateInterval.get_id());
         });
     }
 
@@ -131,6 +167,9 @@ public class HomeFX {
         });
     }
 
+    private void setSearchTermByValue(String searchTerm) {
+        this.searchTermCb.getSelectionModel().select(searchTerm);
+    }
 
     private void getImageAndSetBackground() {
         if (this.isActive()) {
@@ -160,7 +199,10 @@ public class HomeFX {
 
     private String getSelectedSearchTerm() {
         if (searchTermCb.getSelectionModel().getSelectedItem() != null && !searchTermCb.getSelectionModel().getSelectedItem().toString().equals("Random")) {
-            return searchTermCb.getSelectionModel().getSelectedItem().toString();
+            String searchTerm = searchTermCb.getSelectionModel().getSelectedItem().toString();
+            this.preferences.put("searchTerm", searchTerm);
+
+            return searchTerm;
         }
         return searchOptions.get(new Random().nextInt(searchOptions.size()));
     }
@@ -170,6 +212,7 @@ public class HomeFX {
         this.activeCheckbox.selectedProperty().addListener((oldVal, old, newv) -> {
             getImageAndSetBackground();
             addUpdateInterval();
+            this.preferences.putBoolean("isActive", this.isActive());
         });
     }
 
